@@ -1,0 +1,618 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>WatchMart — Luxury Watches Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #131921; --navy-2: #232f3e; --navy-3: #37475a;
+    --amazon-orange: #ff9900; --cta: #ffd814; --cta-border: #fcd200; --cta-hover:#f7ca00;
+    --bg: #f3f4f6; --panel: #ffffff; --text: #0f1111; --muted: #565959; --line: #e3e6e6;
+    --danger: #b12704; --ok: #067d62;
+    box-sizing: border-box;
+    padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg:#111315; --panel:#1b1d20; --text:#f2f2f2; --muted:#a6a6a6; --line:#2c2f33; }
+  }
+  :root[data-theme="dark"] { --bg:#111315; --panel:#1b1d20; --text:#f2f2f2; --muted:#a6a6a6; --line:#2c2f33; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--text); font-family:"Roboto",ui-sans-serif,system-ui,sans-serif; }
+  h1,h2,h3,.brand,.btn-cta { font-family:"Poppins",sans-serif; }
+  a { color:inherit; text-decoration:none; }
+  button { font-family:inherit; }
+  .wrap { max-width:1200px; margin:0 auto; padding:0 16px; }
+  .link-btn { background:none; border:none; cursor:pointer; font:inherit; color:inherit; padding:0; }
+
+  /* ---------- header ---------- */
+  header.main { background:var(--navy); color:#fff; }
+  header.main .wrap { display:flex; align-items:center; gap:16px; padding:10px 16px; flex-wrap:wrap; }
+  .brand { font-weight:700; font-size:22px; color:#fff; flex-shrink:0; }
+  .brand span { color:var(--amazon-orange); }
+  .deliver { font-size:12px; line-height:1.25; display:flex; align-items:center; gap:6px; cursor:default; flex-shrink:0; }
+  .deliver b { display:block; font-size:13px; }
+  .search { flex:1; min-width:220px; display:flex; }
+  .search input { flex:1; border:none; padding:10px 12px; font-size:14px; border-radius:4px 0 0 4px; }
+  .search button { background:var(--amazon-orange); border:none; padding:0 16px; border-radius:0 4px 4px 0; cursor:pointer; font-size:15px; }
+  .head-right { display:flex; align-items:center; gap:18px; flex-shrink:0; }
+  .head-item { font-size:12px; line-height:1.25; cursor:pointer; background:none; border:1px solid transparent; color:#fff; padding:6px 8px; border-radius:3px; }
+  .head-item b { display:block; font-size:13.5px; }
+  .head-item:hover { border-color:#fff; }
+  .cart-btn { display:flex; align-items:center; gap:6px; font-weight:700; font-size:14px; position:relative; }
+  .cart-count { background:var(--amazon-orange); color:var(--navy); font-weight:800; border-radius:50%; width:18px; height:18px; display:flex; align-items:center; justify-content:center; font-size:11px; }
+
+  nav.sub { background:var(--navy-2); color:#fff; }
+  nav.sub .wrap { display:flex; gap:18px; padding:8px 16px; font-size:13px; overflow-x:auto; white-space:nowrap; }
+  nav.sub button { background:none; border:none; color:#fff; font:inherit; cursor:pointer; opacity:.9; }
+  nav.sub button.active, nav.sub button:hover { opacity:1; text-decoration:underline; }
+
+  /* ---------- hero ---------- */
+  .hero { position:relative; min-height:230px; display:flex; align-items:center; color:#fff;
+    background: linear-gradient(100deg, rgba(10,10,10,.72), rgba(10,10,10,.25)),
+      url("https://images.unsplash.com/photo-1548171838-b3d4c18a3a67?w=1600&q=70&auto=format&fit=crop") center/cover; }
+  .hero .wrap { padding:34px 16px; }
+  .hero h1 { margin:0 0 8px; font-size:clamp(22px,4vw,32px); }
+  .hero p { margin:0 0 16px; max-width:46ch; opacity:.92; font-size:14px; }
+  .hero .btn-cta { display:inline-block; }
+
+  /* ---------- category tiles ---------- */
+  section.cats { padding:22px 0 4px; }
+  .cats-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:14px; }
+  .cat-tile { background:var(--panel); border:1px solid var(--line); border-radius:4px; overflow:hidden; cursor:pointer; text-align:left; padding:0; }
+  .cat-tile img { width:100%; height:100px; object-fit:cover; display:block; }
+  .cat-tile .label { padding:10px 12px; font-weight:600; font-size:13.5px; }
+  .cat-tile:hover { box-shadow:0 4px 14px rgba(0,0,0,.14); }
+
+  /* ---------- product grid ---------- */
+  section.listing { padding:22px 0 60px; }
+  .listing h2 { font-size:17px; margin:0 0 14px; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:14px; }
+  .card { background:var(--panel); border:1px solid var(--line); border-radius:4px; padding:12px; display:flex; flex-direction:column; }
+  .card .imgbox { aspect-ratio:1/1; border-radius:3px; overflow:hidden; background:#eee; margin-bottom:10px; }
+  .card .imgbox img { width:100%; height:100%; object-fit:cover; display:block; }
+  .card h3 { font-size:13.5px; font-weight:500; margin:0 0 6px; line-height:1.35; min-height:36px; }
+  .stars { color:var(--amazon-orange); font-size:12px; margin-bottom:6px; }
+  .stars .cnt { color:var(--muted); margin-left:4px; }
+  .price-now { font-size:17px; font-weight:700; }
+  .price-old { font-size:12px; color:var(--muted); text-decoration:line-through; margin-left:6px; }
+  .off-badge { display:inline-block; background:var(--danger); color:#fff; font-size:11px; font-weight:700; padding:2px 6px; border-radius:2px; margin-bottom:4px; }
+  .ship-badge { font-size:11px; color:var(--ok); font-weight:600; margin-top:4px; }
+  .add-cart { margin-top:10px; background:var(--cta); border:1px solid var(--cta-border); padding:8px; border-radius:20px; font-weight:600; font-size:12.5px; cursor:pointer; }
+  .add-cart:hover { background:var(--cta-hover); }
+
+  button:focus-visible, input:focus-visible, select:focus-visible { outline:2px solid var(--amazon-orange); outline-offset:2px; }
+
+  /* ---------- modal / overlay shell ---------- */
+  .overlay-bg { position:fixed; inset:0; background:rgba(0,0,0,.5); z-index:40; display:none; }
+  .overlay-bg.show { display:block; }
+  .modal { position:fixed; top:0; right:0; bottom:0; width:min(420px,100vw); background:var(--panel); z-index:41; transform:translateX(100%); transition:transform .2s ease; display:flex; flex-direction:column; }
+  .modal.show { transform:translateX(0); }
+  .modal.center { top:8vh; bottom:auto; left:50%; right:auto; width:min(380px,92vw); border-radius:6px; transform:translate(-50%,-16px); opacity:0; transition:opacity .15s ease, transform .15s ease; max-height:84vh; overflow-y:auto; }
+  .modal.center.show { transform:translate(-50%,0); opacity:1; }
+  .modal-head { display:flex; justify-content:space-between; align-items:center; padding:16px 18px; border-bottom:1px solid var(--line); }
+  .modal-head h2 { margin:0; font-size:17px; }
+  .modal-close { background:none; border:none; font-size:20px; cursor:pointer; color:var(--muted); }
+  .modal-body { padding:16px 18px; overflow-y:auto; flex:1; }
+
+  /* cart drawer items */
+  .cart-item { display:flex; gap:10px; padding:12px 0; border-bottom:1px solid var(--line); }
+  .cart-item img { width:64px; height:64px; object-fit:cover; border-radius:3px; }
+  .cart-item .info { flex:1; }
+  .cart-item h4 { margin:0 0 4px; font-size:13px; font-weight:500; }
+  .qty-stepper { display:inline-flex; align-items:center; border:1px solid var(--line); border-radius:14px; }
+  .qty-stepper button { width:26px; height:26px; border:none; background:none; cursor:pointer; font-size:14px; }
+  .qty-stepper span { min-width:22px; text-align:center; font-size:13px; }
+  .remove-link { color:var(--amazon-orange); font-size:12px; cursor:pointer; margin-left:12px; }
+  .cart-summary { padding:16px 18px; border-top:1px solid var(--line); }
+  .cart-summary .subtotal { font-size:16px; font-weight:700; margin-bottom:10px; }
+  .btn-cta { width:100%; background:var(--cta); border:1px solid var(--cta-border); padding:10px; border-radius:20px; font-weight:700; font-size:14px; cursor:pointer; text-align:center; }
+  .btn-cta:hover { background:var(--cta-hover); }
+  .btn-cta[disabled] { opacity:.5; cursor:not-allowed; }
+  .empty-note { color:var(--muted); font-size:13px; padding:20px 0; text-align:center; }
+
+  /* auth form */
+  .field { margin-bottom:13px; }
+  .field label { display:block; font-size:12.5px; font-weight:600; margin-bottom:5px; }
+  .field input, .field select { width:100%; padding:9px 10px; border:1px solid #a6a6a6; border-radius:4px; font-size:14px; background:var(--panel); color:var(--text); }
+  .form-error { background:#fdf2f0; border:1px solid var(--danger); color:var(--danger); font-size:13px; padding:8px 10px; border-radius:4px; margin-bottom:12px; }
+  .tabs { display:flex; gap:0; margin-bottom:14px; border-bottom:1px solid var(--line); }
+  .tabs button { flex:1; padding:9px; border:none; background:none; cursor:pointer; font-weight:600; font-size:13px; color:var(--muted); border-bottom:2px solid transparent; }
+  .tabs button.active { color:var(--text); border-color:var(--amazon-orange); }
+  .row2 { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  .row3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; }
+  .security-note { font-size:11.5px; color:var(--muted); display:flex; gap:6px; align-items:flex-start; margin-top:4px; }
+
+  /* checkout page */
+  .checkout-overlay { position:fixed; inset:0; background:var(--bg); z-index:50; overflow-y:auto; display:none; }
+  .checkout-overlay.show { display:block; }
+  .checkout-top { background:var(--navy); color:#fff; padding:12px 16px; display:flex; align-items:center; gap:14px; }
+  .checkout-top .brand { font-size:18px; }
+  .steps { display:flex; gap:8px; font-size:12px; margin-left:auto; }
+  .steps span { padding:4px 10px; border-radius:12px; background:rgba(255,255,255,.12); }
+  .steps span.active { background:var(--amazon-orange); color:#131921; font-weight:700; }
+  .checkout-grid { display:grid; grid-template-columns:1fr 320px; gap:24px; padding:24px 16px; max-width:1000px; margin:0 auto; align-items:start; }
+  @media (max-width:760px){ .checkout-grid{ grid-template-columns:1fr; } }
+  .co-panel { background:var(--panel); border:1px solid var(--line); border-radius:6px; padding:20px; }
+  .co-panel h2 { font-size:16px; margin:0 0 16px; }
+  .co-actions { display:flex; justify-content:flex-end; gap:10px; margin-top:16px; }
+  .btn-secondary { background:var(--panel); border:1px solid var(--line); padding:9px 16px; border-radius:20px; cursor:pointer; font-size:13px; }
+  .summary-panel { background:var(--panel); border:1px solid var(--line); border-radius:6px; padding:18px; position:sticky; top:16px; }
+  .summary-panel h3 { margin:0 0 12px; font-size:14.5px; }
+  .summary-line { display:flex; justify-content:space-between; font-size:13px; padding:4px 0; color:var(--muted); }
+  .summary-total { display:flex; justify-content:space-between; font-weight:700; font-size:15px; padding-top:8px; border-top:1px solid var(--line); margin-top:6px; }
+  .review-block { border:1px solid var(--line); border-radius:4px; padding:12px 14px; margin-bottom:12px; font-size:13px; }
+  .review-block h4 { margin:0 0 6px; font-size:13px; }
+  .confirm { text-align:center; padding:60px 16px; max-width:520px; margin:0 auto; }
+  .confirm .tick { font-size:44px; color:var(--ok); }
+</style>
+</head>
+<body>
+
+<header class="main">
+  <div class="wrap">
+    <div class="brand">Watch<span>Mart</span></div>
+    <div class="deliver">📍<span><span style="opacity:.8">Deliver to</span><b>Worldwide</b></span></div>
+    <form class="search" onsubmit="return false">
+      <input type="text" placeholder="Search watches, brands, sellers…" />
+      <button type="submit" aria-label="Search">🔍</button>
+    </form>
+    <div class="head-right">
+      <button class="head-item" id="account-btn"><span id="account-line1">Hello, sign in</span><b id="account-line2">Account &amp; Lists</b></button>
+      <button class="head-item"><span style="opacity:.8">Returns</span><b>&amp; Orders</b></button>
+      <button class="head-item cart-btn" id="cart-open-btn">🛒 Cart <span class="cart-count" id="cart-count">0</span></button>
+    </div>
+  </div>
+</header>
+
+<nav class="sub">
+  <div class="wrap">
+    <button class="active" data-cat="">All Watches</button>
+    <button data-cat="Men's">Men's</button>
+    <button data-cat="Women's">Women's</button>
+    <button data-cat="Luxury & Swiss">Luxury &amp; Swiss</button>
+    <button data-cat="Vintage">Vintage</button>
+    <button data-cat="Smart Watches">Smart Watches</button>
+    <button data-cat="Straps & Parts">Straps &amp; Parts</button>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="wrap">
+    <h1>Luxury Watch Flash Sale — shipped worldwide</h1>
+    <p>Verified pre-owned &amp; new timepieces, checked and photographed before listing.</p>
+    <a href="#grid-top" class="btn-cta" style="display:inline-block;width:auto;padding:10px 22px;">Shop the sale</a>
+  </div>
+</section>
+
+<div class="wrap">
+  <section class="cats">
+    <div class="cats-grid" id="cat-tiles"></div>
+  </section>
+
+  <section class="listing" id="grid-top">
+    <h2 id="listing-title">Luxury watches for you</h2>
+    <div class="grid" id="grid"></div>
+  </section>
+</div>
+
+<!-- ===== cart drawer ===== -->
+<div class="overlay-bg" id="cart-overlay"></div>
+<div class="modal" id="cart-drawer">
+  <div class="modal-head"><h2>Your Cart</h2><button class="modal-close" id="cart-close">✕</button></div>
+  <div class="modal-body" id="cart-body"></div>
+  <div class="cart-summary" id="cart-summary" style="display:none">
+    <div class="subtotal" id="cart-subtotal"></div>
+    <button class="btn-cta" id="checkout-btn">Proceed to checkout</button>
+  </div>
+</div>
+
+<!-- ===== auth modal ===== -->
+<div class="overlay-bg" id="auth-overlay"></div>
+<div class="modal center" id="auth-modal">
+  <div class="modal-head"><h2 id="auth-title">Sign in</h2><button class="modal-close" id="auth-close">✕</button></div>
+  <div class="modal-body">
+    <div class="tabs">
+      <button class="active" data-tab="login">Sign in</button>
+      <button data-tab="register">Create account</button>
+    </div>
+    <div id="auth-error" class="form-error" style="display:none"></div>
+    <form id="auth-form">
+      <div class="field" id="name-field" style="display:none">
+        <label for="f-auth-name">Your name</label>
+        <input id="f-auth-name" autocomplete="name" />
+      </div>
+      <div class="field">
+        <label for="f-auth-email">Email</label>
+        <input id="f-auth-email" type="email" autocomplete="email" required />
+      </div>
+      <div class="field">
+        <label for="f-auth-password">Password</label>
+        <input id="f-auth-password" type="password" autocomplete="current-password" required />
+      </div>
+      <button type="submit" class="btn-cta" id="auth-submit">Sign in</button>
+    </form>
+  </div>
+</div>
+
+<!-- ===== checkout ===== -->
+<div class="checkout-overlay" id="checkout-overlay">
+  <div class="checkout-top">
+    <div class="brand">Watch<span style="color:var(--amazon-orange)">Mart</span> Checkout</div>
+    <div class="steps">
+      <span id="step-badge-1" class="active">1 Address</span>
+      <span id="step-badge-2">2 Payment</span>
+      <span id="step-badge-3">3 Review</span>
+    </div>
+    <button class="head-item" id="checkout-close" style="margin-left:14px;">✕ Close</button>
+  </div>
+
+  <div class="checkout-grid">
+    <div>
+      <!-- step 1: shipping -->
+      <div class="co-panel" id="co-step-1">
+        <h2>Shipping address</h2>
+        <div id="co-error-1" class="form-error" style="display:none"></div>
+        <div class="field"><label>Full name</label><input id="s-fullName" /></div>
+        <div class="field"><label>Address</label><input id="s-address" /></div>
+        <div class="row2">
+          <div class="field"><label>City</label><input id="s-city" /></div>
+          <div class="field"><label>State / Region</label><input id="s-state" /></div>
+        </div>
+        <div class="row2">
+          <div class="field"><label>Postal code</label><input id="s-postal" /></div>
+          <div class="field"><label>Country</label>
+            <select id="s-country">
+              <option>Nigeria</option><option>United States</option><option>United Kingdom</option>
+              <option>Canada</option><option>Ghana</option><option>South Africa</option>
+              <option>Germany</option><option>United Arab Emirates</option><option>India</option><option>Other</option>
+            </select>
+          </div>
+        </div>
+        <div class="co-actions"><button class="btn-cta" id="to-step-2" style="width:auto;padding:10px 20px;">Use this address</button></div>
+      </div>
+
+      <!-- step 2: payment -->
+      <div class="co-panel" id="co-step-2" style="display:none">
+        <h2>Payment method</h2>
+        <div id="co-error-2" class="form-error" style="display:none"></div>
+        <div class="field"><label>Card number</label><input id="p-number" inputmode="numeric" placeholder="4242 4242 4242 4242" /></div>
+        <div class="field"><label>Name on card</label><input id="p-name" /></div>
+        <div class="row3">
+          <div class="field"><label>Exp. month</label><input id="p-month" placeholder="MM" inputmode="numeric" maxlength="2" /></div>
+          <div class="field"><label>Exp. year</label><input id="p-year" placeholder="YYYY" inputmode="numeric" maxlength="4" /></div>
+          <div class="field"><label>CVV</label><input id="p-cvv" inputmode="numeric" maxlength="4" /></div>
+        </div>
+        <p class="security-note">🔒 Your card number and CVV are checked, used once, and discarded — the server only ever stores the card brand and last 4 digits.</p>
+        <div class="co-actions">
+          <button class="btn-secondary" id="back-step-1">Back</button>
+          <button class="btn-cta" id="to-step-3" style="width:auto;padding:10px 20px;">Review order</button>
+        </div>
+      </div>
+
+      <!-- step 3: review -->
+      <div class="co-panel" id="co-step-3" style="display:none">
+        <h2>Review your order</h2>
+        <div id="co-error-3" class="form-error" style="display:none"></div>
+        <div class="review-block"><h4>Shipping to</h4><div id="review-address"></div></div>
+        <div class="review-block"><h4>Payment</h4><div id="review-payment"></div></div>
+        <div class="review-block"><h4>Items</h4><div id="review-items"></div></div>
+        <div class="co-actions">
+          <button class="btn-secondary" id="back-step-2">Back</button>
+          <button class="btn-cta" id="place-order-btn" style="width:auto;padding:10px 20px;">Place your order</button>
+        </div>
+      </div>
+
+      <!-- confirmation -->
+      <div class="confirm" id="co-confirm" style="display:none">
+        <div class="tick">✓</div>
+        <h2>Order placed — thank you!</h2>
+        <p id="confirm-text" style="color:var(--muted)"></p>
+        <button class="btn-cta" id="confirm-continue" style="width:auto;padding:10px 20px;">Continue shopping</button>
+      </div>
+    </div>
+
+    <aside class="summary-panel" id="checkout-summary"></aside>
+  </div>
+</div>
+
+<script>
+(function () {
+  var API_BASE = "http://localhost:4000/api";
+  var IMAGES = {
+    "Men's": "https://images.unsplash.com/photo-1735352246756-1abb2a4ba09c?w=400&q=70&auto=format&fit=crop",
+    "Women's": "https://images.unsplash.com/photo-1751437774882-deeea4352018?w=400&q=70&auto=format&fit=crop",
+    "Luxury & Swiss": "https://images.unsplash.com/photo-1600003014608-c2ccc1570a65?w=400&q=70&auto=format&fit=crop",
+    "Vintage": "https://images.unsplash.com/photo-1548171838-b3d4c18a3a67?w=400&q=70&auto=format&fit=crop",
+    "Smart Watches": "https://images.unsplash.com/photo-1762708052123-7332966eaecb?w=400&q=70&auto=format&fit=crop",
+    "Straps & Parts": "https://images.unsplash.com/photo-1735352246756-1abb2a4ba09c?w=400&q=70&auto=format&fit=crop"
+  };
+  var CATS = ["Men's", "Women's", "Luxury & Swiss", "Vintage", "Smart Watches", "Straps & Parts"];
+
+  var state = { token: localStorage.getItem("wm_token") || null, user: JSON.parse(localStorage.getItem("wm_user") || "null"),
+    products: [], activeCategory: "", cart: { items: [], subtotal: 0 }, authTab: "login" };
+
+  function naira(n) { return "₦" + Math.round(n).toLocaleString("en-NG"); }
+
+  async function api(path, opts) {
+    opts = opts || {};
+    var headers = Object.assign({ "Content-Type": "application/json" }, opts.headers || {});
+    if (state.token) headers.Authorization = "Bearer " + state.token;
+    var res;
+    try {
+      res = await fetch(API_BASE + path, Object.assign({}, opts, { headers: headers }));
+    } catch (e) {
+      throw new Error("Can't reach the backend at " + API_BASE + ". Is the server running?");
+    }
+    var data = null;
+    try { data = await res.json(); } catch (e) {}
+    if (!res.ok) throw new Error((data && data.error) || "Something went wrong.");
+    return data;
+  }
+
+  /* ---------------- header / auth state ---------------- */
+  function refreshAccountHeader() {
+    var l1 = document.getElementById("account-line1");
+    var l2 = document.getElementById("account-line2");
+    if (state.user) { l1.textContent = "Hello, " + state.user.name.split(" ")[0]; l2.textContent = "Account & Lists"; }
+    else { l1.textContent = "Hello, sign in"; l2.textContent = "Account & Lists"; }
+  }
+  document.getElementById("account-btn").addEventListener("click", function () {
+    if (state.user) { logout(); } else { openAuth("login"); }
+  });
+  function logout() {
+    state.token = null; state.user = null;
+    localStorage.removeItem("wm_token"); localStorage.removeItem("wm_user");
+    state.cart = { items: [], subtotal: 0 };
+    refreshAccountHeader(); renderCartDrawer(); updateCartCount();
+  }
+
+  /* ---------------- auth modal ---------------- */
+  var authOverlay = document.getElementById("auth-overlay"), authModal = document.getElementById("auth-modal");
+  function openAuth(tab) {
+    state.authTab = tab || "login"; setAuthTab(state.authTab);
+    document.getElementById("auth-error").style.display = "none";
+    authOverlay.classList.add("show"); authModal.classList.add("show");
+  }
+  function closeAuth() { authOverlay.classList.remove("show"); authModal.classList.remove("show"); }
+  document.getElementById("auth-close").addEventListener("click", closeAuth);
+  authOverlay.addEventListener("click", function(){ closeAuth(); closeCart(); });
+  document.querySelectorAll("#auth-modal .tabs button").forEach(function (btn) {
+    btn.addEventListener("click", function () { setAuthTab(btn.dataset.tab); });
+  });
+  function setAuthTab(tab) {
+    state.authTab = tab;
+    document.querySelectorAll("#auth-modal .tabs button").forEach(function (b) { b.classList.toggle("active", b.dataset.tab === tab); });
+    document.getElementById("auth-title").textContent = tab === "login" ? "Sign in" : "Create account";
+    document.getElementById("name-field").style.display = tab === "register" ? "block" : "none";
+    document.getElementById("auth-submit").textContent = tab === "login" ? "Sign in" : "Create account";
+  }
+  document.getElementById("auth-form").addEventListener("submit", async function (e) {
+    e.preventDefault();
+    var errEl = document.getElementById("auth-error");
+    errEl.style.display = "none";
+    var email = document.getElementById("f-auth-email").value.trim();
+    var password = document.getElementById("f-auth-password").value;
+    var name = document.getElementById("f-auth-name").value.trim();
+    try {
+      var path = state.authTab === "login" ? "/auth/login" : "/auth/register";
+      var body = state.authTab === "login" ? { email: email, password: password } : { name: name, email: email, password: password };
+      var data = await api(path, { method: "POST", body: JSON.stringify(body) });
+      state.token = data.token; state.user = data.user;
+      localStorage.setItem("wm_token", state.token); localStorage.setItem("wm_user", JSON.stringify(state.user));
+      refreshAccountHeader(); closeAuth();
+      await loadCart();
+    } catch (err) {
+      errEl.textContent = err.message; errEl.style.display = "block";
+    }
+  });
+
+  /* ---------------- category tiles + nav ---------------- */
+  function renderCatTiles() {
+    var el = document.getElementById("cat-tiles");
+    el.innerHTML = CATS.map(function (c) {
+      return '<button class="cat-tile" data-cat="' + c + '"><img src="' + IMAGES[c] + '" alt="' + c + '" loading="lazy" /><div class="label">' + c + "</div></button>";
+    }).join("");
+    el.querySelectorAll(".cat-tile").forEach(function (t) { t.addEventListener("click", function () { setCategory(t.dataset.cat); }); });
+  }
+  document.querySelectorAll("nav.sub button").forEach(function (b) { b.addEventListener("click", function () { setCategory(b.dataset.cat); }); });
+  function setCategory(cat) {
+    state.activeCategory = cat;
+    document.querySelectorAll("nav.sub button").forEach(function (b) { b.classList.toggle("active", b.dataset.cat === cat); });
+    document.getElementById("listing-title").textContent = cat ? cat + " watches" : "Luxury watches for you";
+    renderGrid();
+  }
+
+  /* ---------------- product grid ---------------- */
+  function starsHTML(rating, count) {
+    var full = Math.round(rating), s = "";
+    for (var i = 0; i < 5; i++) s += i < full ? "★" : "☆";
+    return s + '<span class="cnt">' + rating.toFixed(1) + " (" + count + ")</span>";
+  }
+  function renderGrid() {
+    var grid = document.getElementById("grid");
+    var items = state.products.filter(function (p) { return !state.activeCategory || p.category === state.activeCategory; });
+    if (!items.length) { grid.innerHTML = '<p class="empty-note">No watches in this category yet.</p>'; return; }
+    grid.innerHTML = items.map(function (p) {
+      var off = Math.round((1 - p.price / p.compareAtPrice) * 100);
+      return '<div class="card">' +
+        (off > 0 ? '<span class="off-badge">-' + off + '%</span>' : "") +
+        '<div class="imgbox"><img src="' + p.image + '" alt="' + p.name + '" loading="lazy" /></div>' +
+        "<h3>" + p.name + "</h3>" +
+        '<div class="stars">' + starsHTML(p.rating, p.reviews) + "</div>" +
+        '<div><span class="price-now">' + naira(p.price) + '</span><span class="price-old">' + naira(p.compareAtPrice) + "</span></div>" +
+        '<div class="ship-badge">Free worldwide shipping</div>' +
+        '<button class="add-cart" data-id="' + p.id + '">Add to Cart</button>' +
+        "</div>";
+    }).join("");
+    grid.querySelectorAll(".add-cart").forEach(function (btn) { btn.addEventListener("click", function () { addToCart(btn.dataset.id); }); });
+  }
+
+  /* ---------------- cart ---------------- */
+  var cartOverlay = document.getElementById("cart-overlay"), cartDrawer = document.getElementById("cart-drawer");
+  function openCart() { cartOverlay.classList.add("show"); cartDrawer.classList.add("show"); }
+  function closeCart() { cartOverlay.classList.remove("show"); cartDrawer.classList.remove("show"); }
+  document.getElementById("cart-open-btn").addEventListener("click", openCart);
+  document.getElementById("cart-close").addEventListener("click", closeCart);
+  cartOverlay.addEventListener("click", closeCart);
+
+  async function addToCart(productId) {
+    if (!state.user) { openAuth("login"); return; }
+    try {
+      var existing = state.cart.items.find(function (i) { return i.product.id === productId; });
+      var qty = existing ? existing.qty + 1 : 1;
+      state.cart = await api("/cart", { method: "POST", body: JSON.stringify({ productId: productId, qty: qty }) });
+      updateCartCount(); renderCartDrawer(); openCart();
+    } catch (err) { alert(err.message); }
+  }
+  async function loadCart() {
+    if (!state.user) { state.cart = { items: [], subtotal: 0 }; updateCartCount(); return; }
+    try { state.cart = await api("/cart"); updateCartCount(); renderCartDrawer(); } catch (e) {}
+  }
+  async function changeQty(productId, qty) {
+    try {
+      if (qty < 1) { state.cart = await api("/cart/" + productId, { method: "DELETE" }); }
+      else { state.cart = await api("/cart", { method: "POST", body: JSON.stringify({ productId: productId, qty: qty }) }); }
+      updateCartCount(); renderCartDrawer();
+    } catch (err) { alert(err.message); }
+  }
+  function updateCartCount() {
+    var n = state.cart.items.reduce(function (s, i) { return s + i.qty; }, 0);
+    document.getElementById("cart-count").textContent = n;
+  }
+  function renderCartDrawer() {
+    var body = document.getElementById("cart-body");
+    var summary = document.getElementById("cart-summary");
+    if (!state.cart.items.length) {
+      body.innerHTML = '<p class="empty-note">' + (state.user ? "Your cart is empty." : "Sign in to see your cart.") + "</p>";
+      summary.style.display = "none";
+      return;
+    }
+    body.innerHTML = state.cart.items.map(function (i) {
+      return '<div class="cart-item"><img src="' + i.product.image + '" alt="" />' +
+        '<div class="info"><h4>' + i.product.name + "</h4>" +
+        '<div>' + naira(i.product.price) + '</div>' +
+        '<div style="margin-top:6px;display:flex;align-items:center;">' +
+          '<span class="qty-stepper"><button data-act="dec" data-id="' + i.product.id + '">–</button><span>' + i.qty + '</span><button data-act="inc" data-id="' + i.product.id + '">+</button></span>' +
+          '<span class="remove-link" data-remove="' + i.product.id + '">Remove</span>' +
+        "</div></div></div>";
+    }).join("");
+    body.querySelectorAll('[data-act="inc"]').forEach(function (b) { b.addEventListener("click", function () { changeQty(b.dataset.id, currentQty(b.dataset.id) + 1); }); });
+    body.querySelectorAll('[data-act="dec"]').forEach(function (b) { b.addEventListener("click", function () { changeQty(b.dataset.id, currentQty(b.dataset.id) - 1); }); });
+    body.querySelectorAll('[data-remove]').forEach(function (b) { b.addEventListener("click", function () { changeQty(b.dataset.remove, 0); }); });
+    document.getElementById("cart-subtotal").textContent = "Subtotal: " + naira(state.cart.subtotal);
+    summary.style.display = "block";
+  }
+  function currentQty(productId) {
+    var item = state.cart.items.find(function (i) { return i.product.id === productId; });
+    return item ? item.qty : 0;
+  }
+
+  /* ---------------- checkout ---------------- */
+  var checkoutOverlay = document.getElementById("checkout-overlay");
+  var shippingData = null, paymentDisplay = null;
+
+  document.getElementById("checkout-btn").addEventListener("click", function () {
+    closeCart(); openCheckout();
+  });
+  document.getElementById("checkout-close").addEventListener("click", function () { checkoutOverlay.classList.remove("show"); });
+
+  function openCheckout() {
+    goToStep(1);
+    renderCheckoutSummary();
+    checkoutOverlay.classList.add("show");
+  }
+  function renderCheckoutSummary() {
+    var el = document.getElementById("checkout-summary");
+    var lines = state.cart.items.map(function (i) {
+      return '<div class="summary-line"><span>' + i.product.name + ' × ' + i.qty + '</span><span>' + naira(i.product.lineTotal) + "</span></div>";
+    }).join("");
+    el.innerHTML = "<h3>Order summary</h3>" + lines +
+      '<div class="summary-total"><span>Total</span><span>' + naira(state.cart.subtotal) + "</span></div>";
+  }
+  function goToStep(n) {
+    [1, 2, 3].forEach(function (i) {
+      document.getElementById("co-step-" + i).style.display = i === n ? "block" : "none";
+      document.getElementById("step-badge-" + i).classList.toggle("active", i === n);
+    });
+    document.getElementById("co-confirm").style.display = "none";
+  }
+
+  document.getElementById("to-step-2").addEventListener("click", function () {
+    var errEl = document.getElementById("co-error-1");
+    var f = { fullName: val("s-fullName"), address: val("s-address"), city: val("s-city"), state: val("s-state"), postal: val("s-postal"), country: val("s-country") };
+    if (!f.fullName || !f.address || !f.city) { errEl.textContent = "Please fill in your name, address, and city."; errEl.style.display = "block"; return; }
+    errEl.style.display = "none"; shippingData = f; goToStep(2);
+  });
+  document.getElementById("back-step-1").addEventListener("click", function () { goToStep(1); });
+
+  document.getElementById("to-step-3").addEventListener("click", function () {
+    var errEl = document.getElementById("co-error-2");
+    var number = val("p-number"), name = val("p-name"), month = val("p-month"), year = val("p-year"), cvv = val("p-cvv");
+    var digits = number.replace(/\D/g, "");
+    if (digits.length < 12 || !name || !month || !year || !/^\d{3,4}$/.test(cvv)) {
+      errEl.textContent = "Please complete every payment field."; errEl.style.display = "block"; return;
+    }
+    errEl.style.display = "none";
+    window._wmCard = { number: digits, name: name, expMonth: month, expYear: year, cvv: cvv };
+    paymentDisplay = { brand: guessBrand(digits), last4: digits.slice(-4) };
+    document.getElementById("review-address").textContent = shippingData.fullName + ", " + shippingData.address + ", " + shippingData.city + (shippingData.state ? ", " + shippingData.state : "") + ", " + shippingData.country;
+    document.getElementById("review-payment").textContent = paymentDisplay.brand + " ending in " + paymentDisplay.last4;
+    document.getElementById("review-items").innerHTML = state.cart.items.map(function (i) { return i.qty + " × " + i.product.name; }).join("<br/>");
+    goToStep(3);
+  });
+  document.getElementById("back-step-2").addEventListener("click", function () { goToStep(2); });
+
+  document.getElementById("place-order-btn").addEventListener("click", async function () {
+    var errEl = document.getElementById("co-error-3");
+    errEl.style.display = "none";
+    try {
+      var card = window._wmCard;
+      var data = await api("/orders/checkout", {
+        method: "POST",
+        body: JSON.stringify({
+          shipping: { fullName: shippingData.fullName, address: shippingData.address, city: shippingData.city, state: shippingData.state, postalCode: shippingData.postal, country: shippingData.country },
+          payment: card
+        })
+      });
+      window._wmCard = null; // forget it client-side too, the moment it's no longer needed
+      document.getElementById("confirm-text").textContent =
+        "Order #" + data.order.id.slice(0, 8).toUpperCase() + " confirmed — charged to " + data.order.payment.brand + " ending in " + data.order.payment.last4 + ". Total " + naira(data.order.total) + ".";
+      document.getElementById("co-step-3").style.display = "none";
+      document.getElementById("co-confirm").style.display = "block";
+      state.cart = { items: [], subtotal: 0 }; updateCartCount(); renderCartDrawer();
+    } catch (err) {
+      errEl.textContent = err.message; errEl.style.display = "block";
+    }
+  });
+  document.getElementById("confirm-continue").addEventListener("click", function () { checkoutOverlay.classList.remove("show"); });
+
+  function val(id) { return document.getElementById(id).value.trim(); }
+  function guessBrand(digits) {
+    if (/^4/.test(digits)) return "Visa";
+    if (/^(5[1-5]|22[2-9])/.test(digits)) return "Mastercard";
+    if (/^(506|6500)/.test(digits)) return "Verve";
+    return "Card";
+  }
+
+  /* ---------------- boot ---------------- */
+  async function boot() {
+    refreshAccountHeader();
+    renderCatTiles();
+    try {
+      state.products = await api("/products");
+    } catch (err) {
+      document.getElementById("grid").innerHTML = '<p class="empty-note">' + err.message + "</p>";
+      return;
+    }
+    renderGrid();
+    await loadCart();
+  }
+  boot();
+})();
+</script>
+</body>
+</html>
